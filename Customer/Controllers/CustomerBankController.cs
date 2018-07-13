@@ -10,15 +10,23 @@ using Customer.Models;
 
 namespace Customer.Controllers
 {
-    public class CustomerBankController : Controller
+    public class CustomerBankController : BaseController
     {
-        private Entities db = new Entities();
+        //private Entities db = new Entities();
+        客戶銀行資訊Repository customerBank;
+        客戶資料Repository customer;
+
+        public CustomerBankController()
+        {
+            customerBank = RepositoryHelper.Get客戶銀行資訊Repository();
+            customer = RepositoryHelper.Get客戶資料Repository();
+        }
 
         // GET: CustomerBank
         public ActionResult Index()
         {
-            var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料);
-            return View(客戶銀行資訊.ToList());
+            var result = customerBank.GetAll().Include(x=>x.客戶資料);
+            return View(result);
         }
 
         // GET: CustomerBank/Details/5
@@ -28,18 +36,19 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            if (客戶銀行資訊 == null)
+
+            客戶銀行資訊 result = customerBank.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶銀行資訊);
+            return View(result);
         }
 
         // GET: CustomerBank/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱");
             return View();
         }
 
@@ -48,17 +57,17 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 客戶銀行資訊)
+        public ActionResult Create([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 data)
         {
             if (ModelState.IsValid)
             {
-                db.客戶銀行資訊.Add(客戶銀行資訊);
-                db.SaveChanges();
+                customerBank.Create(data);
+                customerBank.Commit();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
-            return View(客戶銀行資訊);
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱", data.客戶Id);
+            return View(data);
         }
 
         // GET: CustomerBank/Edit/5
@@ -68,13 +77,14 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            if (客戶銀行資訊 == null)
+
+            客戶銀行資訊 result = customerBank.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
-            return View(客戶銀行資訊);
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱", result.客戶Id);
+            return View(result);
         }
 
         // POST: CustomerBank/Edit/5
@@ -82,16 +92,16 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 客戶銀行資訊)
+        public ActionResult Edit([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 data)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶銀行資訊).State = EntityState.Modified;
-                db.SaveChanges();
+                customerBank.SetModifyStatus(data);
+                customerBank.Commit();
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶銀行資訊.客戶Id);
-            return View(客戶銀行資訊);
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱", data.客戶Id);
+            return View(data);
         }
 
         // GET: CustomerBank/Delete/5
@@ -101,12 +111,13 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            if (客戶銀行資訊 == null)
+
+            客戶銀行資訊 result = customerBank.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶銀行資訊);
+            return View(result);
         }
 
         // POST: CustomerBank/Delete/5
@@ -114,9 +125,10 @@ namespace Customer.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            db.客戶銀行資訊.Remove(客戶銀行資訊);
-            db.SaveChanges();
+            客戶銀行資訊 result = customerBank.GetSingle(x=>x.Id == id);
+            customerBank.Remove(result);
+            customerBank.Commit();
+
             return RedirectToAction("Index");
         }
 
@@ -124,9 +136,27 @@ namespace Customer.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                EF.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [HttpPost]
+        public ActionResult Search(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+            {
+                return View("Index", customerBank.GetAll());
+            }
+
+            if (customer.Exists(x => x.客戶名稱.Contains(keyword)) == false)
+            {
+                return HttpNotFound();
+            }
+
+            var id = customer.Query(x => x.客戶名稱.Contains(keyword)).Select(x=>x.Id).ToList();
+            var result = customerBank.GetAll().Where(x => id.Contains(x.客戶Id));
+            return View("Index", result);
         }
     }
 }

@@ -2,13 +2,24 @@
 
 @{
     ViewBag.Title = "客戶銀行資料管理";
+    string Keyword = (string)ViewBag.Keyword;
 }
 
 <h2>客戶銀行資料管理</h2>
-
-<p>
+<p>　</p>
+<div>
     @Html.ActionLink("Create New", "Create")
-</p>
+</div>
+
+<div class="input-group">
+    @using (Html.BeginForm("Search", "CustomerBank", FormMethod.Post, null))
+    {
+        @Html.Label("客戶名稱：")
+        @Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })
+        <input type="submit" />
+    }
+</div>
+
 <table class="table">
     <tr>
         <th>
@@ -32,32 +43,33 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.銀行名稱)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.銀行代碼)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.分行代碼)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.帳戶名稱)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.帳戶號碼)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.客戶資料.客戶名稱)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.銀行名稱)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.銀行代碼)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.分行代碼)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.帳戶名稱)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.帳戶號碼)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.客戶資料.客戶名稱)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
 
 </table>

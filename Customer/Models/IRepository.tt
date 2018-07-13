@@ -33,6 +33,7 @@ namespace <#= code.VsNamespaceSuggestion() #>
 		void Remove(T entity);
 		void Remove(IQueryable<T> entity);
 		void ExecuteCommand(string sqlCmd, params object[] para);
+		void SetModifyStatus(T entity);
 		List<T> Execute(string sqlCmd, params object[] para);
 		void Commit();
 	}
@@ -85,6 +86,7 @@ namespace <#= code.VsNamespaceSuggestion() #>
 		bool LazyLoadingEnabled { get; set; }
 		bool ProxyCreationEnabled { get; set; }
 		string ConnectionString { get; set; }
+		void Dispose();
 	}
 }<# fileManager.StartNewFile("EFRepository.cs");
 #>using System;
@@ -130,6 +132,11 @@ namespace <#= code.VsNamespaceSuggestion() #>
 		public bool Exists(Expression<Func<T, bool>> expression)
 		{
 			return ObjectSet.Any(expression);
+		}
+		
+		public virtual void SetModifyStatus(T entity)
+		{
+			UnitOfWork.Context.Entry(entity).State = EntityState.Modified;
 		}
 
 		public virtual void Create(T entity)
@@ -181,6 +188,11 @@ namespace <#= code.VsNamespaceSuggestion() #>
 			Context.SaveChanges();
 		}
 		
+		public void Dispose()
+		{
+			Context.Dispose();
+		}
+
 		public bool LazyLoadingEnabled
 		{
 			get { return Context.Configuration.LazyLoadingEnabled; }

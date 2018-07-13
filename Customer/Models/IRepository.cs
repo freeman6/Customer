@@ -19,6 +19,7 @@ namespace Customer.Models
 		void Remove(T entity);
 		void Remove(IQueryable<T> entity);
 		void ExecuteCommand(string sqlCmd, params object[] para);
+		void SetModifyStatus(T entity);
 		List<T> Execute(string sqlCmd, params object[] para);
 		void Commit();
 	}

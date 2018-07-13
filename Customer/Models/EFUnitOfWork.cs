@@ -16,6 +16,11 @@ namespace Customer.Models
 			Context.SaveChanges();
 		}
 		
+		public void Dispose()
+		{
+			Context.Dispose();
+		}
+
 		public bool LazyLoadingEnabled
 		{
 			get { return Context.Configuration.LazyLoadingEnabled; }

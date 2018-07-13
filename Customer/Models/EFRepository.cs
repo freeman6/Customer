@@ -42,6 +42,11 @@ namespace Customer.Models
 		{
 			return ObjectSet.Any(expression);
 		}
+		
+		public virtual void SetModifyStatus(T entity)
+		{
+			UnitOfWork.Context.Entry(entity).State = EntityState.Modified;
+		}
 
 		public virtual void Create(T entity)
 		{

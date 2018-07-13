@@ -10,14 +10,20 @@ using Customer.Models;
 
 namespace Customer.Controllers
 {
-    public class CustomersController : Controller
+    public class CustomersController : BaseController
     {
-        private Entities db = new Entities();
+        客戶資料Repository customer;
+        
+        public CustomersController()
+        {
+            customer = RepositoryHelper.Get客戶資料Repository();
+        }
 
         // GET: Customers
         public ActionResult Index()
         {
-            return View(db.客戶資料.ToList());
+            //return View(db.客戶資料.ToList());
+            return View(customer.GetAll());
         }
 
         // GET: Customers/Details/5
@@ -27,12 +33,14 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶資料 客戶資料 = db.客戶資料.Find(id);
-            if (客戶資料 == null)
+
+            var result = customer.GetSingle(x=>x.Id == id);
+
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶資料);
+            return View(result);
         }
 
         // GET: Customers/Create
@@ -46,16 +54,17 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 客戶資料)
+        public ActionResult Create([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 data)
         {
             if (ModelState.IsValid)
             {
-                db.客戶資料.Add(客戶資料);
-                db.SaveChanges();
+                customer.Create(data);
+                customer.Commit();
+
                 return RedirectToAction("Index");
             }
 
-            return View(客戶資料);
+            return View(data);
         }
 
         // GET: Customers/Edit/5
@@ -65,12 +74,12 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶資料 客戶資料 = db.客戶資料.Find(id);
-            if (客戶資料 == null)
+            客戶資料 result = customer.GetSingle(x => x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶資料);
+            return View(result);
         }
 
         // POST: Customers/Edit/5
@@ -78,15 +87,15 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 客戶資料)
+        public ActionResult Edit([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 data)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶資料).State = EntityState.Modified;
-                db.SaveChanges();
+                customer.SetModifyStatus(data);
+                customer.Commit();
                 return RedirectToAction("Index");
             }
-            return View(客戶資料);
+            return View(data);
         }
 
         // GET: Customers/Delete/5
@@ -96,12 +105,12 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶資料 客戶資料 = db.客戶資料.Find(id);
-            if (客戶資料 == null)
+            客戶資料 result = customer.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶資料);
+            return View(result);
         }
 
         // POST: Customers/Delete/5
@@ -109,9 +118,9 @@ namespace Customer.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶資料 客戶資料 = db.客戶資料.Find(id);
-            db.客戶資料.Remove(客戶資料);
-            db.SaveChanges();
+            客戶資料 result = customer.GetSingle(x => x.Id == id);
+            customer.Remove(result);
+            customer.Commit();
             return RedirectToAction("Index");
         }
 
@@ -119,9 +128,26 @@ namespace Customer.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                EF.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [HttpPost]
+        public ActionResult Search(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+            {
+                return View("Index", customer.GetAll());
+            }
+
+            if (customer.Exists(x => x.客戶名稱.Contains(keyword)) == false)
+            {
+                return HttpNotFound();
+            }
+
+            IEnumerable<客戶資料> result = customer.Query(x => x.客戶名稱.Contains(keyword));
+            return View("Index", result);
         }
     }
 }

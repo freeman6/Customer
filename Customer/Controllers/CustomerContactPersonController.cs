@@ -10,15 +10,23 @@ using Customer.Models;
 
 namespace Customer.Controllers
 {
-    public class CustomerContactPersonController : Controller
+    public class CustomerContactPersonController : BaseController
     {
-        private Entities db = new Entities();
+        //private Entities db = new Entities();
+        客戶聯絡人Repository customerContactPerson;
+        客戶資料Repository customer;
+
+        public CustomerContactPersonController()
+        {
+            customerContactPerson = RepositoryHelper.Get客戶聯絡人Repository();
+            customer = RepositoryHelper.Get客戶資料Repository();
+        }
 
         // GET: CustomerContactPerson
         public ActionResult Index()
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
-            return View(客戶聯絡人.ToList());
+            var result = customerContactPerson.GetAll().Include(x => x.客戶資料);
+            return View(result);
         }
 
         // GET: CustomerContactPerson/Details/5
@@ -28,18 +36,18 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            if (客戶聯絡人 == null)
+            客戶聯絡人 result = customerContactPerson.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶聯絡人);
+            return View(result);
         }
 
         // GET: CustomerContactPerson/Create
         public ActionResult Create()
         {
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱");
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱");
             return View();
         }
 
@@ -48,17 +56,17 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 data)
         {
             if (ModelState.IsValid)
             {
-                db.客戶聯絡人.Add(客戶聯絡人);
-                db.SaveChanges();
+                customerContactPerson.Create(data);
+                customerContactPerson.Commit();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
-            return View(客戶聯絡人);
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱", data.客戶Id);
+            return View(data);
         }
 
         // GET: CustomerContactPerson/Edit/5
@@ -68,13 +76,15 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            if (客戶聯絡人 == null)
+
+            客戶聯絡人 result = customerContactPerson.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
-            return View(客戶聯絡人);
+
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱", result.客戶Id);
+            return View(result);
         }
 
         // POST: CustomerContactPerson/Edit/5
@@ -82,16 +92,16 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 data)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(客戶聯絡人).State = EntityState.Modified;
-                db.SaveChanges();
+                customerContactPerson.SetModifyStatus(data);
+                customerContactPerson.Commit();
                 return RedirectToAction("Index");
             }
-            ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
-            return View(客戶聯絡人);
+            ViewBag.客戶Id = new SelectList(customer.GetAll(), "Id", "客戶名稱", data.客戶Id);
+            return View(data);
         }
 
         // GET: CustomerContactPerson/Delete/5
@@ -101,12 +111,13 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            if (客戶聯絡人 == null)
+
+            客戶聯絡人 result = customerContactPerson.GetSingle(x=>x.Id == id);
+            if (result == null)
             {
                 return HttpNotFound();
             }
-            return View(客戶聯絡人);
+            return View(result);
         }
 
         // POST: CustomerContactPerson/Delete/5
@@ -114,9 +125,9 @@ namespace Customer.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            db.客戶聯絡人.Remove(客戶聯絡人);
-            db.SaveChanges();
+            客戶聯絡人 result = customerContactPerson.GetSingle(x=>x.Id == id);
+            customerContactPerson.Remove(result);
+            customerContactPerson.Commit();
             return RedirectToAction("Index");
         }
 
@@ -124,9 +135,26 @@ namespace Customer.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                EF.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [HttpPost]
+        public ActionResult Search(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+            {
+                return View("Index", customerContactPerson.GetAll());
+            }
+
+            if (customerContactPerson.Exists(x => x.姓名.Contains(keyword)) == false)
+            {
+                return HttpNotFound();
+            }
+
+            IEnumerable<客戶聯絡人> result = customerContactPerson.Query(x => x.姓名.Contains(keyword));
+            return View("Index", result);
         }
     }
 }

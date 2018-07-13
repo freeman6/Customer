@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "客戶資料管理";
+    var customerType = (SelectList)ViewBag.customerType;
 }
 
 <h2>客戶資料管理</h2>
@@ -15,6 +16,14 @@
     {
         @Html.Label("客戶名稱：")
         @Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })
+        <input type="submit" />
+    }
+
+    @using (Html.BeginForm("SearchByCustomerType", "Customers", FormMethod.Post, null))
+    {
+        @Html.Label("客戶類別：")
+        @Html.DropDownList("CustType", customerType)
+        @*@Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })*@
         <input type="submit" />
     }
 </div>

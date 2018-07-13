@@ -13,16 +13,20 @@ namespace Customer.Controllers
     public class CustomersController : BaseController
     {
         客戶資料Repository customer;
-        
+        客戶類別Repository customerType;
+
         public CustomersController()
         {
             customer = RepositoryHelper.Get客戶資料Repository();
+            customerType = RepositoryHelper.Get客戶類別Repository(EF);
         }
 
         // GET: Customers
         public ActionResult Index()
         {
-            //return View(db.客戶資料.ToList());
+            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
+            ViewBag.customerType = selectList;
+
             return View(customer.GetAll());
         }
 
@@ -74,11 +78,16 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             客戶資料 result = customer.GetSingle(x => x.Id == id);
             if (result == null)
             {
                 return HttpNotFound();
             }
+
+            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
+            ViewBag.customerType = selectList;
+
             return View(result);
         }
 
@@ -87,7 +96,7 @@ namespace Customer.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email")] 客戶資料 data)
+        public ActionResult Edit([Bind(Include = "Id,客戶名稱,統一編號,電話,傳真,地址,Email,是否已刪除,客戶類別")] 客戶資料 data)
         {
             if (ModelState.IsValid)
             {
@@ -147,6 +156,28 @@ namespace Customer.Controllers
             }
 
             IEnumerable<客戶資料> result = customer.Query(x => x.客戶名稱.Contains(keyword));
+            return View("Index", result);
+        }
+
+        [HttpPost]
+        public ActionResult SearchByCustomerType(string CustType)
+        {
+            if (string.IsNullOrEmpty(CustType))
+            {
+                return View("Index", customer.GetAll());
+            }
+
+            if (customer.Exists(x => x.客戶類別.Contains(CustType)) == false)
+            {
+                return HttpNotFound();
+            }
+
+            IEnumerable <客戶資料> result = customer.Query(x => x.客戶類別.Contains(CustType));
+
+            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
+            ViewBag.customerType = selectList;
+
+
             return View("Index", result);
         }
     }

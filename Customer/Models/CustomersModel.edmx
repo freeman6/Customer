@@ -27,6 +27,7 @@
           <Property Name="地址" Type="nvarchar" MaxLength="100" />
           <Property Name="Email" Type="nvarchar" MaxLength="250" />
           <Property Name="是否已刪除" Type="bit" />
+          <Property Name="客戶類別" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="客戶銀行資訊">
           <Key>
@@ -53,6 +54,13 @@
           <Property Name="手機" Type="nvarchar" MaxLength="50" />
           <Property Name="電話" Type="nvarchar" MaxLength="50" />
           <Property Name="是否已刪除" Type="bit" />
+        </EntityType>
+        <EntityType Name="客戶類別">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="類別名稱" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--產生期間發現錯誤:
 警告 6002: 資料表/檢視 'G:\PROJECTS\WEBAPPLICATION1\WEBAPPLICATION1\APP_DATA\客戶資料.MDF.dbo.viwCustomerSummary' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
@@ -95,6 +103,7 @@
           <EntitySet Name="客戶資料" EntityType="Self.客戶資料" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="客戶銀行資訊" EntityType="Self.客戶銀行資訊" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="客戶聯絡人" EntityType="Self.客戶聯絡人" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="客戶類別" EntityType="Self.客戶類別" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="viwCustomerSummary" EntityType="Self.viwCustomerSummary" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [viwCustomerSummary].[Id] AS [Id], 
@@ -140,6 +149,7 @@
           <NavigationProperty Name="客戶銀行資訊" Relationship="Self.FK_客戶銀行資訊_客戶資料" FromRole="客戶資料" ToRole="客戶銀行資訊" />
           <NavigationProperty Name="客戶聯絡人" Relationship="Self.FK_客戶聯絡人_客戶資料" FromRole="客戶資料" ToRole="客戶聯絡人" />
           <Property Name="是否已刪除" Type="Boolean" />
+          <Property Name="客戶類別" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="客戶銀行資訊">
           <Key>
@@ -217,7 +227,15 @@
             <End Role="客戶資料" EntitySet="客戶資料" />
             <End Role="客戶聯絡人" EntitySet="客戶聯絡人" />
           </AssociationSet>
+          <EntitySet Name="客戶類別" EntityType="CustomersModel.客戶類別" />
         </EntityContainer>
+        <EntityType Name="客戶類別">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="類別名稱" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -238,6 +256,7 @@
           <EntitySetMapping Name="客戶資料">
             <EntityTypeMapping TypeName="CustomersModel.客戶資料">
               <MappingFragment StoreEntitySet="客戶資料">
+                <ScalarProperty Name="客戶類別" ColumnName="客戶類別" />
                 <ScalarProperty Name="是否已刪除" ColumnName="是否已刪除" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="客戶名稱" ColumnName="客戶名稱" />
@@ -284,6 +303,14 @@
                 <ScalarProperty Name="客戶名稱" ColumnName="客戶名稱" />
                 <ScalarProperty Name="聯絡人數量" ColumnName="聯絡人數量" />
                 <ScalarProperty Name="銀行帳戶數量" ColumnName="銀行帳戶數量" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="客戶類別">
+            <EntityTypeMapping TypeName="CustomersModel.客戶類別">
+              <MappingFragment StoreEntitySet="客戶類別">
+                <ScalarProperty Name="類別名稱" ColumnName="類別名稱" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

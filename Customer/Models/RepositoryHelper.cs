@@ -76,5 +76,19 @@ namespace Customer.Models
 			repository.UnitOfWork = unitOfWork;
 			return repository;
 		}		
+
+		public static 客戶類別Repository Get客戶類別Repository()
+		{
+			var repository = new 客戶類別Repository();
+			repository.UnitOfWork = GetUnitOfWork();
+			return repository;
+		}
+
+		public static 客戶類別Repository Get客戶類別Repository(IUnitOfWork unitOfWork)
+		{
+			var repository = new 客戶類別Repository();
+			repository.UnitOfWork = unitOfWork;
+			return repository;
+		}		
 	}
 }

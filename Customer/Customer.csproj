@@ -245,6 +245,15 @@
     <Compile Include="Models\客戶銀行資訊Repository.cs">
       <DependentUpon>IRepository.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\客戶類別.cs">
+      <DependentUpon>CustomersModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\客戶類別.Partial.cs">
+      <DependentUpon>EFGeneratePartialClass.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\客戶類別Repository.cs">
+      <DependentUpon>IRepository.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

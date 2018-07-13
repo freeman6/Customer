@@ -85,4 +85,18 @@ namespace Customer.Service
         }
 
     }
+    public class IgnoreCaseSensitive : IEqualityComparer<string>
+    {
+        public bool Equals(string x, string y)
+        {
+            //throw new NotImplementedException();
+            return (x.ToUpper().Equals(y.ToUpper()));
+        }
+
+        public int GetHashCode(string obj)
+        {
+            //throw new NotImplementedException();
+            return obj.ToUpper().GetHashCode();
+        }
+    }
 }

@@ -25,7 +25,6 @@
         {
             @Html.Label("客戶類別：")
             @Html.DropDownList("CustType", customerType)
-            @*@Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })*@
             <input type="submit" />
         }
     </dvi>
@@ -60,6 +59,9 @@
         <th>
             @Html.DisplayNameFor(model => model.是否已刪除)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.客戶類別)
+        </th>
         <th></th>
     </tr>
 
@@ -86,6 +88,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.是否已刪除)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem =>item.客戶類別)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |

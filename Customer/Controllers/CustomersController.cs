@@ -187,20 +187,6 @@ namespace Customer.Controllers
         }
 
         [HttpPost]
-        public ActionResult ExportExcelFile2()
-        {
-            var custType = RepositoryHelper.Get客戶類別Repository(EF);
-            var xls = new XLWorkbook();
-            var data = customer.GetAll().ToDataTable<客戶資料>();
-            xls.Worksheets.Add(data,"customer");
-
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                xls.SaveAs(memoryStream); 
-                return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "customers.xlsx");
-            }
-        }
-        [HttpPost]
         public ActionResult ExportExcelFile()
         {
             using (XLWorkbook xls = new XLWorkbook())

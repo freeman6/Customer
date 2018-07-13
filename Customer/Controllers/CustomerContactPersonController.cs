@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Customer.Models;
+using Customer.Service;
 
 namespace Customer.Controllers
 {
@@ -26,6 +27,10 @@ namespace Customer.Controllers
         public ActionResult Index()
         {
             var result = customerContactPerson.GetAll().Include(x => x.客戶資料);
+            var i = 0;
+            SelectList selectList = new SelectList(customerContactPerson.GetAll().Select(x=> new { id = i+1,  職稱 = x.職稱 }).Distinct().ToList(), "職稱", "職稱");
+            ViewBag.contactTitle = selectList;
+
             return View(result);
         }
 
@@ -154,6 +159,29 @@ namespace Customer.Controllers
             }
 
             IEnumerable<客戶聯絡人> result = customerContactPerson.Query(x => x.姓名.Contains(keyword));
+            return View("Index", result);
+        }
+
+        [HttpPost]
+        public ActionResult SearchByContactTitle(string Title)
+        {
+            var i = 0;
+
+            if (string.IsNullOrEmpty(Title))
+            {
+                return View("Index", customerContactPerson.GetAll());
+            }
+
+            if (customerContactPerson.Exists(x => x.職稱.Contains(Title)) == false)
+            {
+                return HttpNotFound();
+            }
+
+            IEnumerable<客戶聯絡人> result = customerContactPerson.Query(x => x.職稱.Contains(Title));
+
+            SelectList selectList = new SelectList(customerContactPerson.GetAll().Select(x => new { id = i + 1, 職稱 = x.職稱 }).Distinct().ToList(), "職稱", "職稱");
+            ViewBag.contactTitle = selectList;
+
             return View("Index", result);
         }
     }

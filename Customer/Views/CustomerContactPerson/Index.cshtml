@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "客戶聯絡人資料管理";
+    var contactTitle = (SelectList)ViewBag.contactTitle;
 }
 
 <h2>客戶聯絡人資料管理</h2>
@@ -17,6 +18,14 @@
         @Html.TextBox("keyword", null, new { placeholder = "客戶聯絡人名稱" })
         <input type="submit" />
     }
+    <dvi>
+        @using (Html.BeginForm("SearchByContactTitle", "CustomerContactPerson", FormMethod.Post, null))
+        {
+            @Html.Label("聯絡人職稱：")
+            @Html.DropDownList("Title", contactTitle)
+            <input type="submit" />
+        }
+    </dvi>
 </div>
 
 <table class="table">

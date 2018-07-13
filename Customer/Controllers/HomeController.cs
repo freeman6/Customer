@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Customer.Models;
 
 namespace Customer.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
+        IviwCustomerSummaryRepository viwCustomerSummary;
+
         public ActionResult Index()
         {
-            return View();
+            viwCustomerSummary = RepositoryHelper.GetviwCustomerSummaryRepository();
+
+            return View(viwCustomerSummary.GetAll());
         }
 
         public ActionResult About()

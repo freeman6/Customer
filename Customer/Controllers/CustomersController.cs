@@ -7,6 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Customer.Models;
+using ClosedXML.Excel;
+using Customer.Service;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace Customer.Controllers
 {
@@ -179,6 +184,40 @@ namespace Customer.Controllers
 
 
             return View("Index", result);
+        }
+
+        [HttpPost]
+        public ActionResult ExportExcelFile2()
+        {
+            var custType = RepositoryHelper.Get客戶類別Repository(EF);
+            var xls = new XLWorkbook();
+            var data = customer.GetAll().ToDataTable<客戶資料>();
+            xls.Worksheets.Add(data,"customer");
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                xls.SaveAs(memoryStream); 
+                return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "customers.xlsx");
+            }
+        }
+        [HttpPost]
+        public ActionResult ExportExcelFile()
+        {
+            using (XLWorkbook xls = new XLWorkbook())
+            {
+                var data = customer.GetAll().Select(x => new { x.客戶名稱, x.客戶類別, x.電話, x.地址 });
+
+                var sheets = xls.Worksheets.Add("客戶資料");
+
+                sheets.Cell(1, 1).Value = data;
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    xls.SaveAs(memoryStream);
+                    //memoryStream.Seek(0, SeekOrigin.Begin);
+                    return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "customers.xlsx");
+                }
+            }
         }
     }
 }

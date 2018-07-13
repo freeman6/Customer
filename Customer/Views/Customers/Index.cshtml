@@ -12,20 +12,29 @@
 </div>
 
 <div class="input-group">
-    @using (Html.BeginForm("Search", "Customers", FormMethod.Post, null))
-    {
-        @Html.Label("客戶名稱：")
-        @Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })
-        <input type="submit" />
-    }
-
-    @using (Html.BeginForm("SearchByCustomerType", "Customers", FormMethod.Post, null))
-    {
-        @Html.Label("客戶類別：")
-        @Html.DropDownList("CustType", customerType)
-        @*@Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })*@
-        <input type="submit" />
-    }
+    <div>
+        @using (Html.BeginForm("Search", "Customers", FormMethod.Post, null))
+        {
+            @Html.Label("客戶名稱：")
+            @Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })
+            <input type="submit" />
+        }
+    </div>
+    <dvi>
+        @using (Html.BeginForm("SearchByCustomerType", "Customers", FormMethod.Post, null))
+        {
+            @Html.Label("客戶類別：")
+            @Html.DropDownList("CustType", customerType)
+            @*@Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })*@
+            <input type="submit" />
+        }
+    </dvi>
+    <div>
+        @using (Html.BeginForm("ExportExcelFile", "Customers", FormMethod.Post, null))
+        {
+            <input type="submit" value="客戶資料匯出" />
+        }
+    </div>
 </div>
 
 <table class="table">

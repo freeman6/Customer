@@ -19,6 +19,7 @@ namespace Customer.Controllers
     {
         客戶資料Repository customer;
         客戶類別Repository customerType;
+        //private bool IsDesc = false;
 
         public CustomersController()
         {
@@ -27,10 +28,11 @@ namespace Customer.Controllers
         }
 
         // GET: Customers
+        [ValidateInput(false)]
         public ActionResult Index()
         {
             SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
-            ViewBag.customerType = selectList;
+            ViewBag.CustType = selectList;
 
             return View(customer.GetAll());
         }
@@ -43,7 +45,7 @@ namespace Customer.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var result = customer.GetSingle(x=>x.Id == id);
+            var result = customer.GetSingle(x => x.Id == id);
 
             if (result == null)
             {
@@ -105,7 +107,6 @@ namespace Customer.Controllers
         {
             if (ModelState.IsValid)
             {
-                customer.SetModifyStatus(data);
                 customer.Commit();
                 return RedirectToAction("Index");
             }
@@ -119,7 +120,7 @@ namespace Customer.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            客戶資料 result = customer.GetSingle(x=>x.Id == id);
+            客戶資料 result = customer.GetSingle(x => x.Id == id);
             if (result == null)
             {
                 return HttpNotFound();
@@ -150,6 +151,9 @@ namespace Customer.Controllers
         [HttpPost]
         public ActionResult Search(string keyword)
         {
+            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
+            ViewBag.CustType = selectList;
+
             if (string.IsNullOrEmpty(keyword))
             {
                 return View("Index", customer.GetAll());
@@ -167,21 +171,20 @@ namespace Customer.Controllers
         [HttpPost]
         public ActionResult SearchByCustomerType(string CustType)
         {
+            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
+            ViewBag.CustType = selectList;
+
             if (string.IsNullOrEmpty(CustType))
             {
                 return View("Index", customer.GetAll());
             }
-
+            
             if (customer.Exists(x => x.客戶類別.Contains(CustType)) == false)
             {
                 return HttpNotFound();
             }
 
-            IEnumerable <客戶資料> result = customer.Query(x => x.客戶類別.Contains(CustType));
-
-            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
-            ViewBag.customerType = selectList;
-
+            IEnumerable<客戶資料> result = customer.Query(x => x.客戶類別.Contains(CustType));
 
             return View("Index", result);
         }
@@ -204,6 +207,19 @@ namespace Customer.Controllers
                     return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "customers.xlsx");
                 }
             }
+        }
+
+        [Route("Customers/SortByColumns/{ColumnName}/{IsDesc}")]
+        public ActionResult SortByColumns(string ColumnName, bool IsDesc = false)
+        {
+            var result = customer.GetAll().Sort<客戶資料>(ColumnName, IsDesc);
+
+            SelectList selectList = new SelectList(customerType.GetAll().ToList(), "Id", "類別名稱");
+            ViewBag.CustType = selectList;
+            ViewBag.ColumnName = ColumnName;
+            ViewBag.IsDesc = !IsDesc;
+
+            return View("Index", result);
         }
     }
 }

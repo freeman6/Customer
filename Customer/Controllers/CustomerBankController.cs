@@ -96,7 +96,6 @@ namespace Customer.Controllers
         {
             if (ModelState.IsValid)
             {
-                customerBank.SetModifyStatus(data);
                 customerBank.Commit();
                 return RedirectToAction("Index");
             }

@@ -101,7 +101,6 @@ namespace Customer.Controllers
         {
             if (ModelState.IsValid)
             {
-                customerContactPerson.SetModifyStatus(data);
                 customerContactPerson.Commit();
                 return RedirectToAction("Index");
             }
@@ -163,24 +162,38 @@ namespace Customer.Controllers
         }
 
         [HttpPost]
-        public ActionResult SearchByContactTitle(string Title)
+        public ActionResult SearchByContactTitle(string contactTitle)
         {
             var i = 0;
 
-            if (string.IsNullOrEmpty(Title))
+            if (string.IsNullOrEmpty(contactTitle))
             {
                 return View("Index", customerContactPerson.GetAll());
             }
 
-            if (customerContactPerson.Exists(x => x.職稱.Contains(Title)) == false)
+            if (customerContactPerson.Exists(x => x.職稱.Contains(contactTitle)) == false)
             {
                 return HttpNotFound();
             }
 
-            IEnumerable<客戶聯絡人> result = customerContactPerson.Query(x => x.職稱.Contains(Title));
+            IEnumerable<客戶聯絡人> result = customerContactPerson.Query(x => x.職稱.Contains(contactTitle));
 
             SelectList selectList = new SelectList(customerContactPerson.GetAll().Select(x => new { id = i + 1, 職稱 = x.職稱 }).Distinct().ToList(), "職稱", "職稱");
             ViewBag.contactTitle = selectList;
+
+            return View("Index", result);
+        }
+
+        [Route("CustomerContactPerson/SortByColumns/{ColumnName}/{IsDesc}")]
+        public ActionResult SortByColumns(string ColumnName, bool IsDesc = false)
+        {
+            var i = 0;
+            var result = customerContactPerson.GetAll().Sort<客戶聯絡人>(ColumnName, IsDesc);
+
+            SelectList selectList = new SelectList(customerContactPerson.GetAll().Select(x => new { id = i + 1, 職稱 = x.職稱 }).Distinct().ToList(), "職稱", "職稱");
+            ViewBag.contactTitle = selectList;
+            ViewBag.ColumnName = ColumnName;
+            ViewBag.IsDesc = !IsDesc;
 
             return View("Index", result);
         }

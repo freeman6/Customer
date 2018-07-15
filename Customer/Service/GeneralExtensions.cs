@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using System.Linq.Dynamic;
 
 namespace Customer.Service
 {
@@ -84,6 +85,11 @@ namespace Customer.Service
             return dtReturn;
         }
 
+        public static IEnumerable<T> Sort<T>(this IEnumerable<T> obj, string ColunmName, bool IsDesc)
+        {
+            var result = obj.OrderBy(ColunmName + (IsDesc ? " descending" : ""));
+            return result;
+        }
     }
     public class IgnoreCaseSensitive : IEqualityComparer<string>
     {
@@ -99,4 +105,5 @@ namespace Customer.Service
             return obj.ToUpper().GetHashCode();
         }
     }
+    
 }

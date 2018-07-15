@@ -33,7 +33,6 @@ namespace <#= code.VsNamespaceSuggestion() #>
 		void Remove(T entity);
 		void Remove(IQueryable<T> entity);
 		void ExecuteCommand(string sqlCmd, params object[] para);
-		void SetModifyStatus(T entity);
 		List<T> Execute(string sqlCmd, params object[] para);
 		void Commit();
 	}
@@ -134,11 +133,6 @@ namespace <#= code.VsNamespaceSuggestion() #>
 			return ObjectSet.Any(expression);
 		}
 		
-		public virtual void SetModifyStatus(T entity)
-		{
-			UnitOfWork.Context.Entry(entity).State = EntityState.Modified;
-		}
-
 		public virtual void Create(T entity)
 		{
 			ObjectSet.Add(entity);

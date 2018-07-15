@@ -11,13 +11,18 @@
     @Html.ActionLink("Create New", "Create")
 </div>
 
-<div class="input-group">
-    @using (Html.BeginForm("Search", "CustomerBank", FormMethod.Post, null))
-    {
-        @Html.Label("客戶名稱：")
-        @Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })
-        <input type="submit" />
-    }
+<div>
+    <div class="form-group mb-2">
+        @using (Html.BeginForm("Search", "CustomerBank", FormMethod.Post, new { @class = "form-inline input-group" }))
+        {
+            <span class="input-group-btn">
+                @Html.Label("客戶名稱：", new { @class = "input-group" })
+                @Html.TextBox("keyword", null, new { @class = "form-control", placeholder = "請輸入關鍵字" })
+
+                <button class="btn btn-primary" type="submit">Go!</button>
+            </span>
+        }
+    </div>
 </div>
 
 <table class="table">

@@ -1,8 +1,25 @@
 ﻿@model IEnumerable<Customer.Models.客戶資料>
 
 @{
-    ViewBag.Title = "客戶資料管理";
-    var customerType = (SelectList)ViewBag.customerType;
+    var ColumnName = (string)ViewBag.ColumnName;
+    var IsDesc = false;
+    if (ViewBag.IsDesc != null)
+    {
+        IsDesc = (bool)ViewBag.IsDesc;
+    }
+    else
+    {
+        IsDesc = false;
+    }
+
+    if (ViewBag.ColumnName != null)
+    {
+        ColumnName = (string)ViewBag.ColumnName;
+    }
+    else
+    {
+        ColumnName = "客戶名稱";
+    }
 }
 
 <h2>客戶資料管理</h2>
@@ -11,93 +28,103 @@
     @Html.ActionLink("Create New", "Create")
 </div>
 
-<div class="input-group">
-    <div>
-        @using (Html.BeginForm("Search", "Customers", FormMethod.Post, null))
-        {
-            @Html.Label("客戶名稱：")
-            @Html.TextBox("keyword", null, new { placeholder = "請輸入關鍵字" })
-            <input type="submit" />
-        }
-    </div>
-    <dvi>
-        @using (Html.BeginForm("SearchByCustomerType", "Customers", FormMethod.Post, null))
-        {
-            @Html.Label("客戶類別：")
-            @Html.DropDownList("CustType", customerType)
-            <input type="submit" />
-        }
-    </dvi>
-    <div>
-        @using (Html.BeginForm("ExportExcelFile", "Customers", FormMethod.Post, null))
-        {
-            <input type="submit" value="客戶資料匯出" />
-        }
+<div class="form-inline">
+    <div class="input-group">
+        <div class="input-group">
+            @using (Html.BeginForm("Search", "Customers", FormMethod.Post, new { @class = "input-group" }))
+            {
+                <span class="input-group-btn">
+                    @Html.TextBox("keyword", null, new { @class = "form-control", placeholder = "請輸入關鍵字" })
+
+                    <button class="btn btn-primary" type="submit">Go!</button>
+                </span>
+            }
+        </div>
+        <div class="input-group">
+            @using (Html.BeginForm("SearchByCustomerType", "Customers", FormMethod.Post, new { @class = "input-group" }))
+            {
+                <span class="input-group-btn">
+                    @Html.DropDownList("CustType", null, "請選擇", new { @class = "form-control" })
+
+                    <button class="btn btn-primary" type="submit">Go!</button>
+                </span>
+            }
+        </div>
+        <div class="input-group">
+            @using (Html.BeginForm("ExportExcelFile", "Customers", FormMethod.Post, new { @class = "input-group" }))
+            {
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="submit">客戶資料匯出</button>
+                </span>
+            }
+        </div>
+        <div class="row"></div>
     </div>
 </div>
 
 <table class="table">
+    @Html.Hidden(ColumnName)
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.客戶名稱)
+            @Html.ActionLink("客戶名稱", "SortByColumns", "Customers", new { ColumnName = "客戶名稱", IsDesc = IsDesc }, new { id = "客戶名稱" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.統一編號)
+            @Html.ActionLink("統一編號", "SortByColumns", "Customers", new { ColumnName = "統一編號", IsDesc = IsDesc }, new { id = "統一編號" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.電話)
+            @Html.ActionLink("電話", "SortByColumns", "Customers", new { ColumnName = "電話", IsDesc = IsDesc }, new { id = "電話" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.傳真)
+            @Html.ActionLink("傳真", "SortByColumns", "Customers", new { ColumnName = "傳真", IsDesc = IsDesc }, new { id = "傳真" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.地址)
+            @Html.ActionLink("地址", "SortByColumns", "Customers", new { ColumnName = "地址", IsDesc = IsDesc }, new { id = "地址" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.ActionLink("Email", "SortByColumns", "Customers", new { ColumnName = "Email", IsDesc = IsDesc }, new { id = "Email" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.是否已刪除)
+            @Html.ActionLink("是否已刪除", "SortByColumns", "Customers", new { ColumnName = "是否已刪除", IsDesc = IsDesc }, new { id = "是否已刪除" })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.客戶類別)
+            @Html.ActionLink("客戶類別", "SortByColumns", "Customers", new { ColumnName = "客戶類別", IsDesc = IsDesc }, new { id = "客戶類別" })
         </th>
         <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.客戶名稱)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.統一編號)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.電話)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.傳真)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.地址)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.是否已刪除)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem =>item.客戶類別)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-        </td>
-    </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.客戶名稱)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.統一編號)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.電話)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.傳真)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.地址)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.是否已刪除)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.客戶類別)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
     }
 
 </table>
